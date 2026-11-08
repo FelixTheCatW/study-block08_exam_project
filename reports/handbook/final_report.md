@@ -190,6 +190,7 @@ python main.py --build-corpus
 python main.py
 python main.py --ask
 python main.py --question "Что такое переобучение?"
+python main.py --deepseek --question "Что такое переобучение?"
 python -m pytest -q
 ```
 

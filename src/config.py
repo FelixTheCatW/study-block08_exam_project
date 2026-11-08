@@ -13,8 +13,11 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from src.env_loader import load_env_file
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_env_file(BASE_DIR / ".env")
 
 DATA_DIR = BASE_DIR / "data"
 DOCS_DIR = BASE_DIR / "docs"
@@ -110,3 +113,14 @@ EXPERIMENTS = [
 # Факультатив (нужен интернет и установка пакетов).
 NEURAL_MODEL_ID = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 LLM_MODEL_ID = "Qwen/Qwen2.5-0.5B-Instruct"
+
+
+# DeepSeek API (OpenAI-совместимый endpoint).
+# Ключ читается из переменной окружения или локального .env и не коммитится.
+DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "").strip()
+DEEPSEEK_API_URL = os.environ.get(
+    "DEEPSEEK_API_URL",
+    "https://api.deepseek.com/chat/completions",
+)
+DEEPSEEK_MODEL = os.environ.get("DEEPSEEK_MODEL", "deepseek-chat")
+DEEPSEEK_TIMEOUT = int(os.environ.get("DEEPSEEK_TIMEOUT", "90"))
