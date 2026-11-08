@@ -1,0 +1,51 @@
+﻿вопрос,верный документ,первый найденный,top1,hit_at_k
+Что такое виртуальное окружение и где его создают?,"01-python, 02-instrumenty-git-diplom, 10-slovar, istochniki/01-python-i-git/Инструкция по установке питон, гит, вс код, istochniki/01-python-i-git/установить env и зависимости",istochniki/07-excel/Block05_VSCode_Exam_Project_Instructions,0,1
+Чем список отличается от кортежа?,"01-python, konspekty/python",konspekty/python,1,1
+Что такое «чистая» функция?,"01-python, konspekty/python",01-python,1,1
+Что такое класс и объект в Python?,"01-python, konspekty/analysis, konspekty/python",konspekty/analysis,1,1
+Как создать коммит в Git?,"02-instrumenty-git-diplom, 09-rekomendacii-patterny, istochniki/01-python-i-git/Инструкция по установке и работе с Github, istochniki/01-python-i-git/Памятка как работать с Github и дипломом",istochniki/01-python-i-git/материалы к занятию,0,1
+Почему в ветке main не работают напрямую?,"02-instrumenty-git-diplom, istochniki/01-python-i-git/Идеальная структура проекта на гитхаб, istochniki/01-python-i-git/Памятка как работать с Github и дипломом",istochniki/01-python-i-git/Памятка как работать с Github и дипломом,1,1
+Как перенести ноутбук из Colab в VS Code?,"02-instrumenty-git-diplom, istochniki/01-python-i-git/Инструкция Git + GitHub + VS Code + Google Colab, istochniki/01-python-i-git/перенести колаб в вс код, istochniki/06-sql/lesson10_vscode_transfer_instruction",istochniki/06-sql/lesson10_vscode_transfer_instruction,1,1
+Что обязательно должно быть в README проекта?,"02-instrumenty-git-diplom, 09-rekomendacii-patterny, istochniki/01-python-i-git/2026 03 01 Рекомендации к диплому, istochniki/01-python-i-git/Идеальная структура проекта на гитхаб",istochniki/01-python-i-git/Идеальная структура проекта на гитхаб,1,1
+Что такое DataFrame в pandas?,"03-numpy-pandas, 07-excel, 10-slovar, konspekty/analysis, konspekty/excel, konspekty/ml",konspekty/analysis,1,1
+Как найти пропуски в pandas?,"03-numpy-pandas, 07-excel, konspekty/analysis, konspekty/excel",konspekty/excel,1,1
+Чем groupby отличается от pivot_table?,"03-numpy-pandas, 07-excel, konspekty/analysis, konspekty/excel","istochniki/07-excel/Методические рекомендации Блок 5, Excel и Python",0,1
+Что такое производная и как она связана с оптимизацией?,"04-matematika, konspekty/math",konspekty/math,1,1
+Что такое градиентный спуск?,"04-matematika, konspekty/math",konspekty/math,1,1
+Как интерпретировать p-value?,"05-statistika, 10-slovar, istochniki/05-statistika/Block04_TV_MS_LA_Методическое пособие для студентов, istochniki/05-statistika/Block04_VSCode_Project_Method_Lessons_1_11, konspekty/stats",konspekty/stats,1,1
+Что такое bootstrap и зачем он нужен?,"05-statistika, 10-slovar, istochniki/05-statistika/Block04_TV_MS_LA_Методическое пособие для студентов, istochniki/05-statistika/Block04_VSCode_Project_Method_Lessons_1_11, konspekty/stats",konspekty/stats,1,1
+Что показывает корреляция и чего она не доказывает?,"03-numpy-pandas, 05-statistika, 10-slovar, konspekty/stats",konspekty/stats,1,1
+Что такое медиана и когда её лучше использовать?,"03-numpy-pandas, 05-statistika, 10-slovar, istochniki/05-statistika/Block04_TV_MS_LA_Методическое пособие для студентов, konspekty/excel, konspekty/stats",konspekty/python,0,1
+Чем INNER JOIN отличается от LEFT JOIN?,"06-sql, 09-rekomendacii-patterny, 10-slovar, istochniki/06-sql/Block2 Sqlite3 Course Plan 10 Lessons, konspekty/sql",istochniki/06-sql/Block2 Sqlite3 Course Plan 10 Lessons,1,1
+Что делает GROUP BY и чем HAVING отличается от WHERE?,"06-sql, 10-slovar, istochniki/06-sql/Block2 Sqlite3 Course Plan 10 Lessons, konspekty/sql",istochniki/00-obshee/Shpargalka_CSharp_NET_Interview,0,1
+Что такое транзакция и какие у неё свойства ACID?,"06-sql, 10-slovar, istochniki/06-sql/Block2 Sqlite3 Course Plan 10 Lessons, istochniki/06-sql/database_sql_sqlite_intro, konspekty/sql",istochniki/00-obshee/Shpargalka_CSharp_NET_Interview,0,1
+Как защититься от SQL-инъекции?,"06-sql, 09-rekomendacii-patterny, 10-slovar, konspekty/sql",09-rekomendacii-patterny,1,1
+Что такое первичный ключ в таблице?,"06-sql, 10-slovar, istochniki/06-sql/Block2 Sqlite3 Course Plan 10 Lessons, istochniki/06-sql/database_sql_sqlite_intro, konspekty/sql",konspekty/sql,1,1
+Что такое VIEW в SQL?,"06-sql, 10-slovar, istochniki/06-sql/Block2 Sqlite3 Course Plan 10 Lessons, konspekty/sql",konspekty/sql,1,1
+Что такое сводная таблица и чем она похожа на pivot_table?,"03-numpy-pandas, 07-excel, konspekty/analysis, konspekty/excel",konspekty/excel,1,1
+"Когда лучше использовать Excel, а когда Python?","07-excel, istochniki/07-excel/Методические рекомендации Блок 5, Excel и Python, konspekty/excel","istochniki/07-excel/Методические рекомендации Блок 5, Excel и Python",1,1
+Что такое переобучение и как его распознать?,"08-ml, 09-rekomendacii-patterny, 10-slovar, istochniki/08-ml/Block07_Decision_Tree_VSCode_Guide, konspekty/ml",istochniki/08-ml/Block07_Decision_Tree_VSCode_Guide,1,1
+Что такое baseline и зачем его сравнивать с моделью?,"08-ml, 09-rekomendacii-patterny, istochniki/08-ml/Block07_Regression_VSCode_Guide, konspekty/ml, konspekty/stats",konspekty/stats,1,1
+Что показывает MAE?,"08-ml, 10-slovar, istochniki/08-ml/Block07_Classification_VSCode_Guide, istochniki/08-ml/Block07_Regression_VSCode_Guide, konspekty/excel, konspekty/ml",konspekty/excel,1,1
+Что такое случайный лес и какие у него плюсы?,"08-ml, 10-slovar, istochniki/08-ml/Block07_Classification_VSCode_Guide, istochniki/08-ml/Block07_Decision_Tree_VSCode_Guide, konspekty/ml",konspekty/stats,0,1
+Почему для KMeans обязательно масштабирование признаков?,"08-ml, istochniki/08-ml/Block07_Clustering_VSCode_Guide, konspekty/ml",istochniki/08-ml/Block07_Clustering_VSCode_Guide,1,1
+Как выбрать число кластеров k?,"08-ml, istochniki/08-ml/Block07_Clustering_VSCode_Guide, konspekty/ml",konspekty/excel,0,1
+Что такое утечка данных и как её избежать?,"08-ml, 09-rekomendacii-patterny, istochniki/03-analiz-dannyh/Block06_Final_DataAnalyzer_VSCode_ML_Preparation_Guide, istochniki/08-ml/Block07_Regression_VSCode_Guide, konspekty/ml",09-rekomendacii-patterny,1,1
+Что такое accuracy и когда её недостаточно?,"08-ml, 10-slovar, istochniki/05-statistika/Block04_TV_MS_LA_Методическое пособие для студентов, istochniki/08-ml/Block07_Classification_VSCode_Guide, konspekty/ml",konspekty/ml,1,1
+Что такое кросс-валидация?,"08-ml, 10-slovar, istochniki/08-ml/Block07_Classification_VSCode_Guide, istochniki/08-ml/Block07_Regression_VSCode_Guide, istochniki/08-ml/Диплом_Постановка_задачи_и_МО, konspekty/ml",istochniki/08-ml/Диплом_Постановка_задачи_и_МО,1,1
+Зачем нужен random_state?,"08-ml, 09-rekomendacii-patterny, istochniki/08-ml/Block07_Classification_VSCode_Guide, istochniki/08-ml/Block07_Regression_VSCode_Guide, konspekty/ml",09-rekomendacii-patterny,1,1
+Какие разделы включает шаблон итогового отчёта проекта?,"09-rekomendacii-patterny, istochniki/03-analiz-dannyh/Block06_Final_DataAnalyzer_VSCode_ML_Preparation_Guide, istochniki/07-excel/Block05_VSCode_Exam_Project_Instructions, istochniki/08-ml/Block07_Regression_VSCode_Guide, konspekty/analysis, konspekty/excel",09-rekomendacii-patterny,1,1
+Какие типичные ошибки перечислены в рекомендациях и чек-листах?,"09-rekomendacii-patterny, istochniki/08-ml/Block07_Classification_VSCode_Guide, istochniki/08-ml/Block07_Decision_Tree_VSCode_Guide, istochniki/08-ml/Block07_Regression_VSCode_Guide, konspekty/excel, konspekty/ml",README,0,1
+Почему нельзя коммитить секреты и токены?,"02-instrumenty-git-diplom, 09-rekomendacii-patterny, README, istochniki/01-python-i-git/Идеальная структура проекта на гитхаб, istochniki/01-python-i-git/План занятий 38",istochniki/01-python-i-git/План занятий 38,1,1
+Что такое RAG?,"05-statistika, 10-slovar, README, istochniki/01-python-i-git/шаблон диплома под RAG, konspekty/stats",konspekty/excel,0,1
+Что такое LLM?,"05-statistika, 10-slovar, istochniki/01-python-i-git/шаблон диплома под RAG, konspekty/stats",konspekty/excel,0,1
+Что такое Embedding?,"05-statistika, 10-slovar, istochniki/01-python-i-git/шаблон диплома под RAG, konspekty/stats",istochniki/05-statistika/Block04_TV_MS_LA_Методическое пособие для студентов,0,1
+Что такое cosine similarity?,"05-statistika, 10-slovar, konspekty/stats",istochniki/05-statistika/Block04_TV_MS_LA_Методическое пособие для студентов,0,1
+Что было просканировано при сборке Handbook?,"11-karta-istochnikov, README",11-karta-istochnikov,1,1
+Сколько уникальных ноутбуков вошло в конспекты?,"11-karta-istochnikov, README",11-karta-istochnikov,1,1
+"Почему в конспекты включают версию SOLVED, а не TODO?","11-karta-istochnikov, README",README,1,1
+Что входит в базу знаний Handbook?,"11-karta-istochnikov, README",11-karta-istochnikov,1,1
+Какие главные принципы повторяются во всех материалах?,README,README,1,1
+Что входит в шаблон диплома под RAG?,"README, istochniki/01-python-i-git/шаблон диплома под RAG, istochniki/_index",istochniki/01-python-i-git/шаблон диплома под RAG,1,1
+Как в RAG без LLM работает retrieval?,"05-statistika, 10-slovar, istochniki/01-python-i-git/шаблон диплома под RAG, istochniki/07-excel/Методические рекомендации Блок 5, Excel и Python",istochniki/01-python-i-git/Три уровня диплома,0,1
+Что такое TF-IDF?,"istochniki/01-python-i-git/шаблон диплома под RAG, istochniki/07-excel/Методические рекомендации Блок 5, Excel и Python",istochniki/01-python-i-git/шаблон диплома под RAG,1,1

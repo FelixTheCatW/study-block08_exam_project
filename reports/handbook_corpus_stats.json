@@ -1,0 +1,52 @@
+{
+  "source_dir": "D:\\study\\handbook",
+  "output_path": "D:\\study\\dml\\study-block08_exam_project\\data\\handbook_documents.json",
+  "scanned_files": 80,
+  "included_documents": 77,
+  "skipped_sensitive": 3,
+  "skipped_duplicates": [],
+  "skipped_empty": [],
+  "total_words": 167457,
+  "total_chars": 1270485,
+  "by_category": {
+    "handbook": 12,
+    "source": 58,
+    "konspekt": 7
+  },
+  "by_kind": {
+    "md": 20,
+    "docx": 57
+  },
+  "by_block": {
+    "01-python": 1,
+    "02-instrumenty-git-diplom": 1,
+    "03-numpy-pandas": 1,
+    "04-matematika": 3,
+    "05-statistika": 3,
+    "06-sql": 4,
+    "07-excel": 4,
+    "08-ml": 8,
+    "09-rekomendacii-patterny": 1,
+    "10-slovar": 1,
+    "11-karta-istochnikov": 1,
+    "00-obshee": 3,
+    "01-python-i-git": 34,
+    "03-analiz-dannyh": 3,
+    "_index": 1,
+    "analysis": 1,
+    "excel": 1,
+    "math": 1,
+    "ml": 1,
+    "python": 1,
+    "sql": 1,
+    "stats": 1,
+    "handbook": 1
+  },
+  "by_language": {
+    "mix": 29,
+    "ru": 47,
+    "en": 1
+  },
+  "skipped_duplicates_count": 0,
+  "skipped_empty_count": 0
+}

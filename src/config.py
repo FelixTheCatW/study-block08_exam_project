@@ -1,19 +1,16 @@
 """Project configuration for Block 8 exam project.
 
 Тема: консольный мини-помощник по учебным документам (RAG / поиск).
+Единственный источник данных — база знаний `D:\\study\\handbook`.
 
-Проект повторяет обязательную часть ноутбука Block08_RAG_Text_TODO:
 - документы разбиваются на чанки;
 - TF-IDF находит ближайшие фрагменты;
 - ответ собирается из точных предложений-цитат с указанием источника;
 - сравниваются несколько настроек по метрикам Top-1 и Hit@K.
-
-Изменены четыре параметра относительно исходного ноутбука:
-CHUNK_SIZE, OVERLAP, SEARCH_METHOD, TOP_K. Добавлены пятый эксперимент E,
-свой документ STUDENT и вопрос без подтверждённого ответа.
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 
@@ -22,30 +19,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data"
 DOCS_DIR = BASE_DIR / "docs"
 REPORTS_DIR = BASE_DIR / "reports"
-CHARTS_DIR = REPORTS_DIR / "charts"
 NOTEBOOKS_DIR = BASE_DIR / "notebooks"
-
-
-DOCUMENTS_PATH = DATA_DIR / "documents.json"
-CHECK_QUESTIONS_PATH = DATA_DIR / "check_questions.json"
-
-
-EXPERIMENTS_CSV = REPORTS_DIR / "experiments.csv"
-RETRIEVAL_CHECK_CSV = REPORTS_DIR / "retrieval_check.csv"
-SETTINGS_JSON = REPORTS_DIR / "settings.json"
-DEMO_ANSWER_TXT = REPORTS_DIR / "demo_answer.txt"
-CUSTOM_ANSWER_TXT = REPORTS_DIR / "custom_answer.txt"
-NO_ANSWER_TXT = REPORTS_DIR / "no_answer.txt"
-FINAL_REPORT_PATH = REPORTS_DIR / "final_report.md"
-EXPERIMENTS_CHART = CHARTS_DIR / "experiments_metrics.png"
-CHUNKS_CHART = CHARTS_DIR / "chunks_per_experiment.png"
 
 
 RANDOM_STATE = 42
 
-# Рабочие (изменённые) параметры обязательной части.
-CHUNK_SIZE = 230
-OVERLAP = 30
+# Рабочие параметры для корпуса Handbook.
+CHUNK_SIZE = 600
+OVERLAP = 100
 SEARCH_METHOD = "char_wb"
 TOP_K = 3
 
@@ -59,11 +40,31 @@ MAX_SENTENCES = 2
 UNKNOWN_QUESTION = "Сколько студенту нужно отжаться на брусьях?"
 UNKNOWN_MIN_SIMILARITY = 0.20
 
-# Свой документ и свой вопрос к нему.
-CUSTOM_DOCUMENT_ID = "STUDENT"
-CUSTOM_QUESTION = "Какой флаг включает интерактивный режим консольного помощника?"
 
-DEMO_QUESTION = "Как делить данные при прогнозе будущих событий?"
+# --- База знаний Handbook ----------------------------------------------
+# Путь можно переопределить переменной окружения HANDBOOK_DIR.
+HANDBOOK_SOURCE_DIR = Path(os.environ.get("HANDBOOK_DIR", r"D:\study\handbook"))
+HANDBOOK_CORPUS_PATH = DATA_DIR / "handbook_documents.json"
+HANDBOOK_STATS_PATH = REPORTS_DIR / "handbook_corpus_stats.json"
+HANDBOOK_CHECK_QUESTIONS_PATH = DATA_DIR / "handbook_check_questions.json"
+
+HANDBOOK_REPORTS_DIR = REPORTS_DIR / "handbook"
+HANDBOOK_CHARTS_DIR = HANDBOOK_REPORTS_DIR / "charts"
+HANDBOOK_EXPERIMENTS_CSV = HANDBOOK_REPORTS_DIR / "experiments.csv"
+HANDBOOK_RETRIEVAL_CHECK_CSV = HANDBOOK_REPORTS_DIR / "retrieval_check.csv"
+HANDBOOK_SETTINGS_JSON = HANDBOOK_REPORTS_DIR / "settings.json"
+HANDBOOK_DEMO_ANSWER_TXT = HANDBOOK_REPORTS_DIR / "demo_answer.txt"
+HANDBOOK_CUSTOM_ANSWER_TXT = HANDBOOK_REPORTS_DIR / "custom_answer.txt"
+HANDBOOK_NO_ANSWER_TXT = HANDBOOK_REPORTS_DIR / "no_answer.txt"
+HANDBOOK_FINAL_REPORT_PATH = HANDBOOK_REPORTS_DIR / "final_report.md"
+HANDBOOK_EXPERIMENTS_CHART = HANDBOOK_CHARTS_DIR / "experiments_metrics.png"
+HANDBOOK_CHUNKS_CHART = HANDBOOK_CHARTS_DIR / "chunks_per_experiment.png"
+
+HANDBOOK_DEMO_QUESTION = "Что такое переобучение и как его распознать?"
+HANDBOOK_CUSTOM_QUESTION = (
+    "Почему для KMeans обязательно масштабирование признаков?"
+)
+HANDBOOK_UNKNOWN_QUESTION = UNKNOWN_QUESTION
 
 
 # Пять экспериментов: A-D из ноутбука и новый E.
