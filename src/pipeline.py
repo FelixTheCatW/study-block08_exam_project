@@ -70,6 +70,7 @@ def print_result(assistant: RagAssistant, result: dict[str, object]) -> None:
 def run_interactive(
     documents: list[dict[str, str]],
     config: CorpusConfig,
+    deepseek: bool = False,
 ) -> None:
     """Интерактивный режим: вопросы вводятся в терминале."""
     assistant = build_assistant(documents, config)
@@ -85,16 +86,54 @@ def run_interactive(
         if not question:
             continue
         print_result(assistant, assistant.ask(question))
+        if deepseek:
+            answer = generate_with_deepseek(assistant, question)
+            if answer:
+                print("ОТВЕТ DEEPSEEK (проверьте по источникам):\n")
+                print(answer)
+                print()
 
 
 def run_single_question(
     documents: list[dict[str, str]],
     config: CorpusConfig,
     question: str,
+    deepseek: bool = False,
 ) -> None:
     """Ответить на один вопрос и завершиться."""
     assistant = build_assistant(documents, config)
     print_result(assistant, assistant.ask(question))
+    if deepseek:
+        answer = generate_with_deepseek(assistant, question)
+        if answer:
+            print("ОТВЕТ DEEPSEEK (проверьте по источникам):\n")
+            print(answer)
+
+
+def generate_with_deepseek(
+    assistant: RagAssistant,
+    question: str,
+) -> str | None:
+    """Сгенерировать ответ через DeepSeek по найденным источникам."""
+    from src.deepseek_generator import DeepSeekGenerator
+
+    if not DeepSeekGenerator.is_available():
+        print(
+            "DeepSeek пропущен: не задан DEEPSEEK_API_KEY. "
+            "Добавьте ключ в локальный .env."
+        )
+        return None
+
+    found = assistant.search(question)
+    if not found:
+        print("DeepSeek: нет найденных источников.")
+        return None
+
+    try:
+        return DeepSeekGenerator().generate(question, found)
+    except Exception as exc:  # noqa: BLE001 - CLI должен не падать
+        print("DeepSeek API недоступен:", str(exc)[:300])
+        return None
 
 
 def run_neural_comparison(
@@ -158,10 +197,19 @@ def run_llm_demo(assistant: RagAssistant, question: str) -> None:
     print(answer)
 
 
+def run_deepseek_demo(assistant: RagAssistant, question: str) -> None:
+    """Сгенерировать ответ DeepSeek по найденным источникам."""
+    answer = generate_with_deepseek(assistant, question)
+    if answer:
+        print("ОТВЕТ DEEPSEEK (проверьте по источникам):\n")
+        print(answer)
+
+
 def run_corpus_pipeline(
     config: CorpusConfig,
     run_neural: bool = False,
     run_llm: bool = False,
+    run_deepseek: bool = False,
 ) -> None:
     """Полный сценарий: поиск, опыты, отчёты, графики."""
     for directory in (config.reports_dir, config.charts_dir):
@@ -297,6 +345,9 @@ def run_corpus_pipeline(
     if run_llm:
         print("10. Факультатив: локальная языковая модель...")
         run_llm_demo(assistant, config.demo_question)
+    if run_deepseek:
+        print("11. DeepSeek API: генерация ответа...")
+        run_deepseek_demo(assistant, config.demo_question)
 
     print("Готово. Корпус:", config.name)
     print("Отчёт:", config.final_report_path)

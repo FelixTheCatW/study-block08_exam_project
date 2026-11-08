@@ -117,6 +117,7 @@ def handbook_config() -> CorpusConfig:
                 "python main.py\n"
                 "python main.py --ask\n"
                 "python main.py --question \"Что такое переобучение?\"\n"
+                "python main.py --deepseek --question \"Что такое переобучение?\"\n"
                 "python -m pytest -q"
             ),
             "artifacts_note": (
@@ -190,6 +191,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="факультативно сгенерировать ответ локальной LLM",
     )
+    parser.add_argument(
+        "--deepseek",
+        action="store_true",
+        help="сгенерировать ответ через DeepSeek API (нужен DEEPSEEK_API_KEY)",
+    )
     return parser.parse_args()
 
 
@@ -212,16 +218,19 @@ def main() -> None:
     documents = DataLoader(config.documents_path).load_documents()
 
     if args.question:
-        run_single_question(documents, config, args.question)
+        run_single_question(
+            documents, config, args.question, deepseek=args.deepseek
+        )
         return
     if args.ask:
-        run_interactive(documents, config)
+        run_interactive(documents, config, deepseek=args.deepseek)
         return
 
     run_corpus_pipeline(
         config,
         run_neural=args.neural,
         run_llm=args.llm,
+        run_deepseek=args.deepseek,
     )
 
 
