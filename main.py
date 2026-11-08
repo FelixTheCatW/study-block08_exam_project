@@ -30,11 +30,13 @@ from src.config import (
     HANDBOOK_CHARTS_DIR,
     HANDBOOK_CHECK_QUESTIONS_PATH,
     HANDBOOK_CHUNKS_CHART,
+    HANDBOOK_CORPUS_COMPOSITION_CHART,
     HANDBOOK_CORPUS_PATH,
     HANDBOOK_CUSTOM_ANSWER_TXT,
     HANDBOOK_CUSTOM_QUESTION,
     HANDBOOK_DEMO_ANSWER_TXT,
     HANDBOOK_DEMO_QUESTION,
+    HANDBOOK_DOCUMENT_SIZES_CHART,
     HANDBOOK_EXPERIMENTS_CHART,
     HANDBOOK_EXPERIMENTS_CSV,
     HANDBOOK_FINAL_REPORT_PATH,
@@ -44,6 +46,7 @@ from src.config import (
     HANDBOOK_SETTINGS_JSON,
     HANDBOOK_SOURCE_DIR,
     HANDBOOK_STATS_PATH,
+    HANDBOOK_TOPK_GAIN_CHART,
     HANDBOOK_UNKNOWN_QUESTION,
     OVERLAP,
     SEARCH_METHOD,
@@ -77,6 +80,9 @@ def handbook_config() -> CorpusConfig:
         final_report_path=HANDBOOK_FINAL_REPORT_PATH,
         experiments_chart=HANDBOOK_EXPERIMENTS_CHART,
         chunks_chart=HANDBOOK_CHUNKS_CHART,
+        corpus_composition_chart=HANDBOOK_CORPUS_COMPOSITION_CHART,
+        document_sizes_chart=HANDBOOK_DOCUMENT_SIZES_CHART,
+        topk_gain_chart=HANDBOOK_TOPK_GAIN_CHART,
         demo_question=HANDBOOK_DEMO_QUESTION,
         custom_question=HANDBOOK_CUSTOM_QUESTION,
         unknown_question=HANDBOOK_UNKNOWN_QUESTION,
@@ -107,10 +113,18 @@ def handbook_config() -> CorpusConfig:
                 "по вопросу о масштабировании признаков для KMeans."
             ),
             "charts_note": (
-                "Графики: `reports/handbook/charts/experiments_metrics.png` "
-                "(Top-1 и Hit@K) и "
-                "`reports/handbook/charts/chunks_per_experiment.png` "
-                "(число чанков)."
+                "Графики:\n\n"
+                "- `charts/corpus_composition.png` — состав корпуса по "
+                "категориям и типам файлов;\n"
+                "- `charts/document_sizes.png` — самые крупные документы;\n"
+                "- `charts/experiments_metrics.png` — Top-1 и Hit@K;\n"
+                "- `charts/topk_gain.png` — прирост Hit@K относительно Top-1;\n"
+                "- `charts/chunks_per_experiment.png` — число чанков.\n\n"
+                "![Состав корпуса](charts/corpus_composition.png)\n\n"
+                "![Размеры документов](charts/document_sizes.png)\n\n"
+                "![Top-1 и Hit@K](charts/experiments_metrics.png)\n\n"
+                "![Прирост Hit@K](charts/topk_gain.png)\n\n"
+                "![Число чанков](charts/chunks_per_experiment.png)"
             ),
             "run_commands": (
                 "python main.py --build-corpus\n"

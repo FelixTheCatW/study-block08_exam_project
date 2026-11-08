@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from src import console_style as cs
 from src.assistant import RagAssistant
 from src.data_loader import DataLoader
 from src.evaluator import SearchEvaluator
@@ -35,6 +36,9 @@ class CorpusConfig:
     final_report_path: Path
     experiments_chart: Path
     chunks_chart: Path
+    corpus_composition_chart: Path
+    document_sizes_chart: Path
+    topk_gain_chart: Path
     demo_question: str
     custom_question: str
     unknown_question: str
@@ -62,8 +66,8 @@ def build_assistant(
 
 
 def print_result(assistant: RagAssistant, result: dict[str, object]) -> None:
-    """Вывести результат поиска и ответ в консоль."""
-    print(assistant.format_result(result))
+    """Вывести результат поиска и ответ в консоль с подсветкой."""
+    print(assistant.format_result(result, color=True))
     print()
 
 
@@ -89,8 +93,8 @@ def run_interactive(
         if deepseek:
             answer = generate_with_deepseek(assistant, question)
             if answer:
-                print("ОТВЕТ DEEPSEEK (проверьте по источникам):\n")
-                print(answer)
+                print(cs.label("ОТВЕТ DEEPSEEK (проверьте по источникам):"))
+                print(cs.answer(answer))
                 print()
 
 
@@ -106,8 +110,8 @@ def run_single_question(
     if deepseek:
         answer = generate_with_deepseek(assistant, question)
         if answer:
-            print("ОТВЕТ DEEPSEEK (проверьте по источникам):\n")
-            print(answer)
+            print(cs.label("ОТВЕТ DEEPSEEK (проверьте по источникам):"))
+            print(cs.answer(answer))
 
 
 def generate_with_deepseek(
@@ -201,8 +205,8 @@ def run_deepseek_demo(assistant: RagAssistant, question: str) -> None:
     """Сгенерировать ответ DeepSeek по найденным источникам."""
     answer = generate_with_deepseek(assistant, question)
     if answer:
-        print("ОТВЕТ DEEPSEEK (проверьте по источникам):\n")
-        print(answer)
+        print(cs.label("ОТВЕТ DEEPSEEK (проверьте по источникам):"))
+        print(cs.answer(answer))
 
 
 def run_corpus_pipeline(
@@ -321,6 +325,21 @@ def run_corpus_pipeline(
         results_df,
         filename=config.chunks_chart.name,
         title="Количество чанков при разных настройках",
+    )
+    visualizer.save_corpus_composition(
+        documents,
+        filename=config.corpus_composition_chart.name,
+        title="Состав корпуса Handbook",
+    )
+    visualizer.save_document_sizes(
+        documents,
+        filename=config.document_sizes_chart.name,
+        title="Самые крупные документы корпуса",
+    )
+    visualizer.save_topk_gain(
+        results_df,
+        filename=config.topk_gain_chart.name,
+        title="Прирост Hit@K относительно Top-1",
     )
 
     # 8. Итоговый отчёт.

@@ -5,7 +5,8 @@
 """
 from __future__ import annotations
 
-from src.answerer import EvidenceAnswerer
+from src import console_style as cs
+from src.answerer import NO_ANSWER, EvidenceAnswerer
 from src.chunker import build_chunks
 from src.config import CHUNK_SIZE, OVERLAP, SEARCH_METHOD, TOP_K
 from src.retriever import TfidfRetriever
@@ -50,17 +51,40 @@ class RagAssistant:
             "best_score": float(found[0]["score"]) if found else 0.0,
         }
 
-    def format_result(self, result: dict[str, object]) -> str:
+    def format_result(self, result: dict[str, object], color: bool = False) -> str:
         """Красиво отформатировать результат для консоли."""
-        lines = [f"Вопрос: {result['question']}"]
         found = result["found"]
+        answer_text = str(result["answer"])
+
+        if not color:
+            lines = [f"Вопрос: {result['question']}"]
+            if found:
+                lines.append("Найденные источники:")
+                for number, item in enumerate(found, 1):
+                    lines.append(
+                        f"  {number}. {item['doc_id']} — {item['title']} "
+                        f"(сходство {float(item['score']):.3f})"
+                    )
+            lines.append("")
+            lines.append(answer_text)
+            return "\n".join(lines)
+
+        lines = [
+            f"{cs.label('Вопрос:')} {cs.question(result['question'])}"
+        ]
         if found:
-            lines.append("Найденные источники:")
+            lines.append(cs.label("Найденные источники:"))
             for number, item in enumerate(found, 1):
+                score = float(item["score"])
                 lines.append(
-                    f"  {number}. {item['doc_id']} — {item['title']} "
-                    f"(сходство {float(item['score']):.3f})"
+                    f"  {number}. {cs.source(item['doc_id'])} — "
+                    f"{item['title']} "
+                    f"{cs.muted(f'(сходство {score:.3f})')}"
                 )
         lines.append("")
-        lines.append(str(result["answer"]))
+        if answer_text == NO_ANSWER:
+            lines.append(cs.warning(answer_text))
+        else:
+            lines.append(cs.label("Ответ:"))
+            lines.append(cs.answer(answer_text))
         return "\n".join(lines)

@@ -29,16 +29,44 @@ def test_save_charts(tmp_path):
             },
         ]
     )
+    documents = [
+        {
+            "id": "README",
+            "title": "README",
+            "text": "Текст " * 100,
+            "category": "handbook",
+            "kind": "md",
+            "words": 100,
+        },
+        {
+            "id": "konspekty/ml",
+            "title": "Конспект ML",
+            "text": "Текст " * 200,
+            "category": "konspekt",
+            "kind": "md",
+            "words": 200,
+        },
+        {
+            "id": "istochniki/guide",
+            "title": "Guide",
+            "text": "Текст " * 300,
+            "category": "source",
+            "kind": "docx",
+            "words": 300,
+        },
+    ]
     visualizer = Visualizer(tmp_path)
 
-    metrics_path = visualizer.save_experiment_metrics(
-        results, "metrics.png", "Тест"
-    )
-    chunks_path = visualizer.save_chunks_per_experiment(
-        results, "chunks.png", "Тест"
-    )
+    paths = [
+        visualizer.save_experiment_metrics(results, "metrics.png", "Тест"),
+        visualizer.save_chunks_per_experiment(results, "chunks.png", "Тест"),
+        visualizer.save_corpus_composition(
+            documents, "composition.png", "Тест"
+        ),
+        visualizer.save_document_sizes(documents, "sizes.png", "Тест"),
+        visualizer.save_topk_gain(results, "gain.png", "Тест"),
+    ]
 
-    assert metrics_path.is_file()
-    assert metrics_path.stat().st_size > 0
-    assert chunks_path.is_file()
-    assert chunks_path.stat().st_size > 0
+    for path in paths:
+        assert path.is_file()
+        assert path.stat().st_size > 0
