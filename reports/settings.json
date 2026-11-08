@@ -1,0 +1,15 @@
+{
+  "chunk_size": 230,
+  "overlap": 30,
+  "search_method": "char_wb",
+  "top_k": 3,
+  "question": "Как делить данные при прогнозе будущих событий?",
+  "top1_accuracy": 1.0,
+  "hit_at_k": 1.0,
+  "unknown_min_similarity": 0.2,
+  "custom_question": "Какой флаг включает интерактивный режим консольного помощника?",
+  "custom_source": "STUDENT",
+  "documents": 17,
+  "chunks": 47,
+  "note": "TF-IDF: поиск и подтверждённые выдержки; LLM выключена по умолчанию"
+}

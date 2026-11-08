@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+.idea/
+.pytest_cache/
+.pytest_tmp/
+*.egg-info/
+.ipynb_checkpoints/
+
+# Локальные секреты и окружение не публикуем.
+.env
+.env.*
