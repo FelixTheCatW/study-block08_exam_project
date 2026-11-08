@@ -26,8 +26,36 @@ class ReportBuilder:
         custom_result: dict[str, object],
         unknown_result: dict[str, object],
         limitations: list[str],
+        context: dict[str, str] | None = None,
     ) -> str:
         """Сформировать текст отчёта."""
+        context = context or {}
+        title = context.get(
+            "title",
+            "Блок 8. Мини-помощник по базе знаний Handbook (RAG / TF-IDF)",
+        )
+        subtitle = context.get(
+            "subtitle",
+            "Поиск по учебным конспектам и Word-документам из "
+            "`D:\\study\\handbook`. Корпус собран локально: точные дубли "
+            "удалены, служебные и потенциально чувствительные файлы "
+            "исключены.",
+        )
+        source_note = context.get(
+            "source_note",
+            "Корпус собран из тематических md-конспектов, `konspekty/` "
+            "и `istochniki/`. В него не включены PDF, изображения и "
+            "сырые данные.",
+        )
+        custom_section_title = context.get(
+            "custom_section_title", "5. Контрольный вопрос по Handbook"
+        )
+        custom_section_note = context.get(
+            "custom_section_note",
+            "Проверяем, что система находит нужный раздел базы знаний "
+            "по вопросу о масштабировании признаков для KMeans.",
+        )
+
         source_text = self._markdown_table(
             pd.DataFrame(
                 [
@@ -46,6 +74,38 @@ class ReportBuilder:
             for number, note in enumerate(self._experiment_notes(results_df), 1)
         )
         limitations_text = "\n".join(f"- {item}" for item in limitations)
+        charts_note = context.get(
+            "charts_note",
+            "Графики: `reports/handbook/charts/experiments_metrics.png` "
+            "(Top-1 и Hit@K) и "
+            "`reports/handbook/charts/chunks_per_experiment.png` "
+            "(число чанков).",
+        )
+        run_commands = context.get(
+            "run_commands",
+            "python -m venv .venv\n"
+            ".venv\\Scripts\\activate\n"
+            "pip install -r requirements.txt\n\n"
+            "python main.py --build-corpus\n"
+            "python main.py\n"
+            "python -m pytest -q\n\n"
+            "python main.py --ask\n"
+            "python main.py --question \"Что такое переобучение?\"\n"
+            "python main.py --neural\n"
+            "python main.py --llm",
+        )
+        artifacts_note = context.get(
+            "artifacts_note",
+            "- `reports/handbook/experiments.csv` — таблица пяти опытов;\n"
+            "- `reports/handbook/retrieval_check.csv` — проверка поиска;\n"
+            "- `reports/handbook/settings.json` — параметры запуска;\n"
+            "- `reports/handbook/demo_answer.txt` — демонстрационный ответ;\n"
+            "- `reports/handbook/custom_answer.txt` — контрольный ответ;\n"
+            "- `reports/handbook/no_answer.txt` — пример без ответа;\n"
+            "- `reports/handbook/charts/*.png` — графики;\n"
+            "- `reports/handbook/final_report.md` — этот отчёт;\n"
+            "- `reports/handbook_corpus_stats.json` — статистика корпуса.",
+        )
 
         custom_found = custom_result["found"]
         custom_top = custom_found[0] if custom_found else None
@@ -65,11 +125,9 @@ class ReportBuilder:
             else "ничего не найдено"
         )
 
-        report_text = f"""# Блок 8. Мини-помощник по учебным документам (RAG / TF-IDF)
+        report_text = f"""# {title}
 
-Консольное приложение по мотивам ноутбука `Block08_RAG_Text_TODO`.
-Система ищет ответ в локальной базе знаний, показывает подтверждающие
-цитаты и честно сообщает, если подтверждённого ответа нет.
+{subtitle}
 
 ## 1. Цель проекта
 
@@ -80,8 +138,7 @@ class ReportBuilder:
 
 ## 2. База знаний
 
-Всего документов: {len(documents)}. Шестнадцать документов взяты из
-учебного ноутбука, плюс добавлен собственный документ `STUDENT`.
+Всего документов: {len(documents)}. {source_note}
 
 {source_text}
 
@@ -108,16 +165,13 @@ class ReportBuilder:
 
 {notes_text}
 
-Графики: `reports/charts/experiments_metrics.png` (Top-1 и Hit@K) и
-`reports/charts/chunks_per_experiment.png` (число чанков).
+{charts_note}
 
-## 5. Свой документ и свой вопрос
+## {custom_section_title}
 
-Добавлен документ `STUDENT` — «Свой документ: правила консольного
-помощника». Он описывает запуск приложения, флаг `--ask`, хранение
-результатов и запрет на публикацию секретов.
+{custom_section_note}
 
-**Свой вопрос:** {custom_result["question"]}
+**Вопрос:** {custom_result["question"]}
 
 **Первый найденный источник:** {custom_source}
 
@@ -166,31 +220,12 @@ TF-IDF, а в `--llm` — попробовать локальную LLM и пр�
 ## 9. Как запустить
 
 ```bash
-python -m venv .venv
-.venv\\Scripts\\activate
-pip install -r requirements.txt
-python main.py
-```
-
-Дополнительные режимы:
-
-```bash
-python main.py --ask
-python main.py --question "Что показывает precision?"
-python main.py --neural
-python main.py --llm
+{run_commands}
 ```
 
 ## 10. Артефакты
 
-- `reports/experiments.csv` — таблица пяти экспериментов;
-- `reports/retrieval_check.csv` — проверка поиска по контрольным вопросам;
-- `reports/settings.json` — параметры запуска;
-- `reports/demo_answer.txt` — демонстрационный ответ;
-- `reports/custom_answer.txt` — ответ по своему документу;
-- `reports/no_answer.txt` — пример отсутствия подтверждённого ответа;
-- `reports/charts/*.png` — графики;
-- `reports/final_report.md` — этот отчёт.
+{artifacts_note}
 """
         return report_text
 

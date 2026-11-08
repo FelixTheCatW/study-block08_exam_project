@@ -3,9 +3,14 @@
 Сравнивает настройки поиска на контрольных вопросах:
 - Top-1 accuracy — нужный документ оказался первым;
 - Hit@K — нужный документ попал в первые K разных источников.
-Это метрики поиска, а не качества генерации текста.
+
+В большом корпусе один и тот же ответ может находиться в нескольких
+документах (конспект, исходный Word, глоссарий). Поэтому `expected`
+может быть строкой или списком допустимых источников.
 """
 from __future__ import annotations
+
+from collections.abc import Sequence
 
 import pandas as pd
 
@@ -18,21 +23,24 @@ class SearchEvaluator:
     @staticmethod
     def check(
         retriever: TfidfRetriever,
-        questions: list[tuple[str, str]],
+        questions: list[tuple[str, str | Sequence[str]]],
         top_k: int = 3,
     ) -> tuple[pd.DataFrame, dict[str, float]]:
         """Посчитать детализацию и сводные метрики Top-1 / Hit@K."""
         details: list[dict[str, object]] = []
         for question, expected in questions:
+            expected_set = (
+                {expected} if isinstance(expected, str) else set(expected)
+            )
             hits = retriever.search(question, top_k=top_k)
             docs = [str(hit["doc_id"]) for hit in hits]
             details.append(
                 {
                     "вопрос": question,
-                    "верный документ": expected,
+                    "верный документ": ", ".join(sorted(expected_set)),
                     "первый найденный": docs[0] if docs else "нет",
-                    "top1": int(bool(docs) and docs[0] == expected),
-                    "hit_at_k": int(expected in docs),
+                    "top1": int(bool(docs) and docs[0] in expected_set),
+                    "hit_at_k": int(any(doc in expected_set for doc in docs)),
                 }
             )
 

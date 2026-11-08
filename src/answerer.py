@@ -46,11 +46,12 @@ class EvidenceAnswerer:
         candidates: list[tuple[float, str, str, str]] = []
         for result in found:
             text = str(result["text"])
+            text = re.sub(r"^\s*#{1,6}\s*", "", text, flags=re.MULTILINE)
             sentences = [
-                sentence.strip()
-                for sentence in re.split(r"(?<=[.!?])\s+", text)
-                if len(sentence.strip()) > 25
+                re.sub(r"^[#>*\-\s]+", "", sentence).strip()
+                for sentence in re.split(r"(?<=[.!?])\s+|\n+", text)
             ]
+            sentences = [sentence for sentence in sentences if len(sentence) > 25]
             if not sentences:
                 sentences = [text]
 

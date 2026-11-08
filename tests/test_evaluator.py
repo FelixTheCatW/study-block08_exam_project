@@ -22,12 +22,24 @@ def test_check_returns_expected_columns(documents, check_questions):
     assert summary["top1_accuracy"] <= summary["hit_at_k"] + 1e-9
 
 
-def test_custom_question_is_hit(documents, check_questions):
+def test_synthetic_questions_are_hit(documents, check_questions):
     assistant = RagAssistant(documents)
-    detail_df, _ = SearchEvaluator.check(
+    _, summary = SearchEvaluator.check(
         assistant.retriever, check_questions, top_k=3
     )
-    row = detail_df[detail_df["верный документ"] == "STUDENT"].iloc[0]
 
-    assert row["top1"] == 1
-    assert row["hit_at_k"] == 1
+    assert summary["hit_at_k"] == 1.0
+
+
+def test_accepts_multiple_correct_sources(documents):
+    assistant = RagAssistant(documents)
+    questions = [
+        ("Что такое RAG и TF-IDF?", ["S04", "S03"]),
+    ]
+    detail_df, summary = SearchEvaluator.check(
+        assistant.retriever, questions, top_k=3
+    )
+
+    assert detail_df.loc[0, "top1"] == 1
+    assert detail_df.loc[0, "hit_at_k"] == 1
+    assert summary["hit_at_k"] == 1.0

@@ -27,8 +27,13 @@ class DataLoader:
         return documents
 
     @staticmethod
-    def load_check_questions(path: Path) -> list[tuple[str, str]]:
-        """Загрузить контрольные вопросы и ожидаемый документ-ответ."""
+    def load_check_questions(path: Path) -> list[tuple[str, str | list[str]]]:
+        """Загрузить контрольные вопросы и ожидаемый документ-ответ.
+
+        Поле `expected` может быть строкой или списком допустимых
+        источников: в большом корпусе ответ часто есть в нескольких
+        документах (конспект, первоисточник, глоссарий).
+        """
         path = Path(path)
         if not path.exists():
             raise FileNotFoundError(f"Контрольные вопросы не найдены: {path}")

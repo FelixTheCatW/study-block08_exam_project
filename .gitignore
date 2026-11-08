@@ -10,3 +10,6 @@ __pycache__/
 # Локальные секреты и окружение не публикуем.
 .env
 .env.*
+
+# Полный текст корпуса Handbook собирается локально из D:\study\handbook.
+data/handbook_documents.json

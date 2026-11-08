@@ -1,18 +1,21 @@
-"""Block 8 exam project: консольный мини-помощник по учебным документам.
+"""Block 8 exam project: консольный помощник по базе знаний Handbook.
 
-Запуск полного сценария:
+Единственный источник данных — `D:\\study\\handbook`.
+
+Запуск:
+    python main.py --build-corpus
     python main.py
 
 Режимы:
     python main.py --ask
-    python main.py --question "Что показывает precision?"
+    python main.py --question "Что такое переобучение?"
     python main.py --neural
     python main.py --llm
 
 Порядок полного сценария:
-1. Загрузка базы знаний и контрольных вопросов.
-2. Построение TF-IDF индекса с изменёнными параметрами.
-3. Демонстрационный вопрос, свой документ и случай без ответа.
+1. Загрузка корпуса Handbook и контрольных вопросов.
+2. Построение TF-IDF индекса.
+3. Демонстрационный вопрос, контрольный вопрос и случай без ответа.
 4. Проверка поиска: Top-1 и Hit@K.
 5. Пять экспериментов с разными чанками и способом поиска.
 6. Сохранение CSV/JSON/TXT, графиков и итогового отчёта.
@@ -22,279 +25,149 @@ from __future__ import annotations
 import argparse
 import sys
 
-from src.assistant import RagAssistant
 from src.config import (
-    CHARTS_DIR,
-    CHECK_QUESTIONS_PATH,
     CHUNK_SIZE,
-    CHUNKS_CHART,
-    CUSTOM_ANSWER_TXT,
-    CUSTOM_QUESTION,
-    DEMO_ANSWER_TXT,
-    DEMO_QUESTION,
-    DOCUMENTS_PATH,
-    EXPERIMENTS_CHART,
-    EXPERIMENTS_CSV,
-    FINAL_REPORT_PATH,
-    NO_ANSWER_TXT,
+    HANDBOOK_CHARTS_DIR,
+    HANDBOOK_CHECK_QUESTIONS_PATH,
+    HANDBOOK_CHUNKS_CHART,
+    HANDBOOK_CORPUS_PATH,
+    HANDBOOK_CUSTOM_ANSWER_TXT,
+    HANDBOOK_CUSTOM_QUESTION,
+    HANDBOOK_DEMO_ANSWER_TXT,
+    HANDBOOK_DEMO_QUESTION,
+    HANDBOOK_EXPERIMENTS_CHART,
+    HANDBOOK_EXPERIMENTS_CSV,
+    HANDBOOK_FINAL_REPORT_PATH,
+    HANDBOOK_NO_ANSWER_TXT,
+    HANDBOOK_REPORTS_DIR,
+    HANDBOOK_RETRIEVAL_CHECK_CSV,
+    HANDBOOK_SETTINGS_JSON,
+    HANDBOOK_SOURCE_DIR,
+    HANDBOOK_STATS_PATH,
+    HANDBOOK_UNKNOWN_QUESTION,
     OVERLAP,
-    REPORTS_DIR,
-    RETRIEVAL_CHECK_CSV,
     SEARCH_METHOD,
-    SETTINGS_JSON,
     TOP_K,
     UNKNOWN_MIN_SIMILARITY,
-    UNKNOWN_QUESTION,
 )
+from src.corpus_builder import HandbookCorpusBuilder
 from src.data_loader import DataLoader
-from src.evaluator import SearchEvaluator
-from src.experiments import ExperimentRunner
-from src.report_builder import ReportBuilder
-from src.visualizer import Visualizer
+from src.pipeline import (
+    CorpusConfig,
+    run_corpus_pipeline,
+    run_interactive,
+    run_single_question,
+)
 
 
-def build_assistant(documents: list[dict[str, str]]) -> RagAssistant:
-    """Собрать помощника с рабочими параметрами из config."""
-    return RagAssistant(
-        documents,
+def handbook_config() -> CorpusConfig:
+    """Настройки единственного корпуса — базы знаний Handbook."""
+    return CorpusConfig(
+        name="handbook",
+        documents_path=HANDBOOK_CORPUS_PATH,
+        check_questions_path=HANDBOOK_CHECK_QUESTIONS_PATH,
+        reports_dir=HANDBOOK_REPORTS_DIR,
+        charts_dir=HANDBOOK_CHARTS_DIR,
+        experiments_csv=HANDBOOK_EXPERIMENTS_CSV,
+        retrieval_check_csv=HANDBOOK_RETRIEVAL_CHECK_CSV,
+        settings_json=HANDBOOK_SETTINGS_JSON,
+        demo_answer_txt=HANDBOOK_DEMO_ANSWER_TXT,
+        custom_answer_txt=HANDBOOK_CUSTOM_ANSWER_TXT,
+        no_answer_txt=HANDBOOK_NO_ANSWER_TXT,
+        final_report_path=HANDBOOK_FINAL_REPORT_PATH,
+        experiments_chart=HANDBOOK_EXPERIMENTS_CHART,
+        chunks_chart=HANDBOOK_CHUNKS_CHART,
+        demo_question=HANDBOOK_DEMO_QUESTION,
+        custom_question=HANDBOOK_CUSTOM_QUESTION,
+        unknown_question=HANDBOOK_UNKNOWN_QUESTION,
+        unknown_min_similarity=UNKNOWN_MIN_SIMILARITY,
         chunk_size=CHUNK_SIZE,
         overlap=OVERLAP,
         search_method=SEARCH_METHOD,
         top_k=TOP_K,
+        report_context={
+            "title": (
+                "Блок 8. Мини-помощник по базе знаний Handbook "
+                "(RAG / TF-IDF)"
+            ),
+            "subtitle": (
+                "Поиск по учебным конспектам и Word-документам из "
+                "`D:\\study\\handbook`. Корпус собран локально: точные "
+                "дубли удалены, служебные и потенциально чувствительные "
+                "файлы исключены."
+            ),
+            "source_note": (
+                "Корпус собран из тематических md-конспектов, "
+                "`konspekty/` и `istochniki/`. В него не включены PDF, "
+                "изображения и сырые данные."
+            ),
+            "custom_section_title": "5. Контрольный вопрос по Handbook",
+            "custom_section_note": (
+                "Проверяем, что система находит нужный раздел базы знаний "
+                "по вопросу о масштабировании признаков для KMeans."
+            ),
+            "charts_note": (
+                "Графики: `reports/handbook/charts/experiments_metrics.png` "
+                "(Top-1 и Hit@K) и "
+                "`reports/handbook/charts/chunks_per_experiment.png` "
+                "(число чанков)."
+            ),
+            "run_commands": (
+                "python main.py --build-corpus\n"
+                "python main.py\n"
+                "python main.py --ask\n"
+                "python main.py --question \"Что такое переобучение?\"\n"
+                "python -m pytest -q"
+            ),
+            "artifacts_note": (
+                "- `reports/handbook/experiments.csv` — таблица пяти опытов;\n"
+                "- `reports/handbook/retrieval_check.csv` — проверка поиска;\n"
+                "- `reports/handbook/settings.json` — параметры запуска;\n"
+                "- `reports/handbook/demo_answer.txt` — демонстрационный ответ;\n"
+                "- `reports/handbook/custom_answer.txt` — контрольный ответ;\n"
+                "- `reports/handbook/no_answer.txt` — пример без ответа;\n"
+                "- `reports/handbook/charts/*.png` — графики;\n"
+                "- `reports/handbook/final_report.md` — этот отчёт;\n"
+                "- `reports/handbook_corpus_stats.json` — статистика сборки корпуса."
+            ),
+        },
+        limitations=[
+            "Корпус собран автоматически из md/docx; PDF, изображения и сырые данные не включены.",
+            "В Handbook есть пересекающиеся конспекты и первоисточники, поэтому один ответ может находиться в нескольких документах.",
+            "TF-IDF не понимает синонимы без общих слов.",
+            "Ответ — точные цитаты, а не генерация текста языковой моделью.",
+            "Параметры чанков и порог сходства нужно настраивать на своих вопросах.",
+            "Перед публикацией корпуса и отчётов нужно проверить права и персональные данные.",
+        ],
     )
 
 
-def print_result(assistant: RagAssistant, result: dict[str, object]) -> None:
-    """Вывести результат поиска и ответ в консоль."""
-    print(assistant.format_result(result))
-    print()
-
-
-def run_interactive(documents: list[dict[str, str]]) -> None:
-    """Интерактивный режим: вопросы вводятся в терминале."""
-    assistant = build_assistant(documents)
-    print(
-        f"Помощник готов. Документов: {len(documents)}, "
-        f"чанков: {len(assistant.records)}. Введите 'exit' для выхода.\n"
+def build_handbook_corpus() -> None:
+    """Собрать корпус Handbook и вывести статистику."""
+    print("Сборка корпуса Handbook...")
+    builder = HandbookCorpusBuilder(
+        source_dir=HANDBOOK_SOURCE_DIR,
+        output_path=HANDBOOK_CORPUS_PATH,
+        stats_path=HANDBOOK_STATS_PATH,
     )
-    while True:
-        question = input("Ваш вопрос: ").strip()
-        if question.lower() in {"exit", "quit", "выход"}:
-            break
-        if not question:
-            continue
-        print_result(assistant, assistant.ask(question))
-
-
-def run_single_question(documents: list[dict[str, str]], question: str) -> None:
-    """Ответить на один вопрос и завершиться."""
-    assistant = build_assistant(documents)
-    print_result(assistant, assistant.ask(question))
-
-
-def run_neural_comparison(
-    assistant: RagAssistant,
-    check_questions: list[tuple[str, str]],
-) -> None:
-    """Факультативно сравнить нейросетевой поиск с TF-IDF."""
-    from src.neural_retriever import NeuralRetriever
-
-    if not NeuralRetriever.is_available():
-        print(
-            "Нейросетевой поиск пропущен: не установлен sentence-transformers. "
-            "Установите пакет и запустите снова."
-        )
-        return
-
-    try:
-        neural = NeuralRetriever().build(assistant.records)
-        neural_found = neural.search(DEMO_QUESTION, top_k=TOP_K)
-        _, neural_summary = SearchEvaluator.check(
-            neural, check_questions, top_k=TOP_K
-        )
-    except (ImportError, OSError) as exc:
-        print("Нейросетевой поиск пропущен:", str(exc)[:250])
-        return
-
-    print("Нейросетевой поиск (эмбеддинги):")
-    for number, item in enumerate(neural_found, 1):
-        print(
-            f"  {number}. {item['doc_id']} — {item['title']} "
-            f"(сходство {float(item['score']):.3f})"
-        )
-    print(
-        "Нейросеть: Top-1 = "
-        f"{neural_summary['top1_accuracy']:.3f}, Hit@K = "
-        f"{neural_summary['hit_at_k']:.3f}\n"
-    )
-
-
-def run_llm_demo(assistant: RagAssistant, question: str) -> None:
-    """Факультативно сгенерировать ответ локальной LLM."""
-    from src.llm_generator import LocalLLMGenerator
-
-    if not LocalLLMGenerator.is_available():
-        print(
-            "Локальная LLM пропущена: не установлены transformers/torch. "
-            "Обязательная часть работает без неё."
-        )
-        return
-
-    found = assistant.search(question)
-    try:
-        generator = LocalLLMGenerator().load()
-        answer = generator.generate(question, found)
-    except (ImportError, OSError) as exc:
-        print("Локальная LLM пропущена:", str(exc)[:250])
-        return
-
-    print("ОТВЕТ ЯЗЫКОВОЙ МОДЕЛИ (проверьте по источникам):\n")
-    print(answer)
-
-
-def run_full_pipeline(args: argparse.Namespace) -> None:
-    """Полный сценарий: поиск, опыты, отчёты, графики."""
-    for directory in (REPORTS_DIR, CHARTS_DIR):
-        directory.mkdir(parents=True, exist_ok=True)
-
-    # 1. Данные.
-    print("1. Загрузка базы знаний и контрольных вопросов...")
-    documents = DataLoader(DOCUMENTS_PATH).load_documents()
-    check_questions = DataLoader.load_check_questions(CHECK_QUESTIONS_PATH)
-    print(f"Документов: {len(documents)}, вопросов: {len(check_questions)}")
-
-    # 2. Рабочий индекс.
-    print("2. Построение TF-IDF индекса...")
-    assistant = build_assistant(documents)
-    print(
-        f"CHUNK_SIZE={CHUNK_SIZE}, OVERLAP={OVERLAP}, "
-        f"SEARCH_METHOD={SEARCH_METHOD}, TOP_K={TOP_K}, "
-        f"чанков={len(assistant.records)}"
-    )
-
-    # 3. Демонстрация: основной, свой и посторонний вопросы.
-    print("3. Демонстрационные вопросы...")
-    demo_result = assistant.ask(DEMO_QUESTION)
-    print_result(assistant, demo_result)
-
-    custom_result = assistant.ask(CUSTOM_QUESTION)
-    print("Свой вопрос к своему документу:")
-    print_result(assistant, custom_result)
-
-    unknown_result = assistant.ask(
-        UNKNOWN_QUESTION, min_similarity=UNKNOWN_MIN_SIMILARITY
-    )
-    print("Вопрос без подтверждённого ответа:")
-    print_result(assistant, unknown_result)
-
-    # 4. Проверка поиска.
-    print("4. Проверка поиска по контрольным вопросам...")
-    detail_df, summary = SearchEvaluator.check(
-        assistant.retriever, check_questions, top_k=TOP_K
-    )
-    print(
-        f"Top-1: {summary['top1_accuracy']:.3f} | "
-        f"Hit@K: {summary['hit_at_k']:.3f}"
-    )
-
-    # 5. Эксперименты A-E.
-    print("5. Пять экспериментов...")
-    results_df, _ = ExperimentRunner(documents, check_questions).run()
-    print(results_df.to_string(index=False))
-
-    # 6. Сохранение артефактов.
-    print("6. Сохранение CSV/JSON/TXT...")
-    DataLoader.save_dataframe(results_df, EXPERIMENTS_CSV)
-    DataLoader.save_dataframe(detail_df, RETRIEVAL_CHECK_CSV)
-    DataLoader.save_text(
-        "Вопрос: " + DEMO_QUESTION + "\n" + str(demo_result["answer"]),
-        DEMO_ANSWER_TXT,
-    )
-    DataLoader.save_text(
-        "Вопрос: " + CUSTOM_QUESTION + "\n" + str(custom_result["answer"]),
-        CUSTOM_ANSWER_TXT,
-    )
-    DataLoader.save_text(
-        "Вопрос: " + UNKNOWN_QUESTION + "\n" + str(unknown_result["answer"]),
-        NO_ANSWER_TXT,
-    )
-
-    settings = {
-        "chunk_size": CHUNK_SIZE,
-        "overlap": OVERLAP,
-        "search_method": SEARCH_METHOD,
-        "top_k": TOP_K,
-        "question": DEMO_QUESTION,
-        "top1_accuracy": summary["top1_accuracy"],
-        "hit_at_k": summary["hit_at_k"],
-        "unknown_min_similarity": UNKNOWN_MIN_SIMILARITY,
-        "custom_question": CUSTOM_QUESTION,
-        "custom_source": custom_result["found"][0]["doc_id"]
-        if custom_result["found"]
-        else None,
-        "documents": len(documents),
-        "chunks": len(assistant.records),
-        "note": (
-            "TF-IDF: поиск и подтверждённые выдержки; "
-            "LLM выключена по умолчанию"
-        ),
-    }
-    DataLoader.save_json(settings, SETTINGS_JSON)
-
-    # 7. Графики.
-    print("7. Сохранение графиков...")
-    visualizer = Visualizer(CHARTS_DIR)
-    visualizer.save_experiment_metrics(
-        results_df,
-        filename=EXPERIMENTS_CHART.name,
-        title="Сравнение настроек поиска (Top-1 и Hit@K)",
-    )
-    visualizer.save_chunks_per_experiment(
-        results_df,
-        filename=CHUNKS_CHART.name,
-        title="Количество чанков при разных настройках",
-    )
-
-    # 8. Итоговый отчёт.
-    print("8. Формирование итогового отчёта...")
-    limitations = [
-        "База знаний небольшая и учебная: 17 документов.",
-        "TF-IDF не понимает синонимы без общих слов; это не нейросетевой поиск.",
-        "Ответ собирается из цитат, а не генерируется языковой моделью.",
-        "Порог сходства нужно настраивать на своих вопросах.",
-        "Семантический поиск и локальная LLM — факультатив и требуют ресурсов.",
-        "Найденная цитата не заменяет проверку прав доступа и содержания.",
-    ]
-    report_builder = ReportBuilder(FINAL_REPORT_PATH)
-    report_text = report_builder.build_report(
-        documents=documents,
-        settings=settings,
-        results_df=results_df,
-        baseline_summary=summary,
-        custom_result=custom_result,
-        unknown_result=unknown_result,
-        limitations=limitations,
-    )
-    report_builder.save(report_text)
-
-    # 9. Факультативные сравнения.
-    if args.neural:
-        print("9. Факультатив: нейросетевой поиск...")
-        run_neural_comparison(assistant, check_questions)
-    if args.llm:
-        print("10. Факультатив: локальная языковая модель...")
-        run_llm_demo(assistant, DEMO_QUESTION)
-
-    print("Готово.")
-    print("Отчёт:", FINAL_REPORT_PATH)
-    print("CSV:", EXPERIMENTS_CSV)
-    print("Проверка поиска:", RETRIEVAL_CHECK_CSV)
+    documents, stats = builder.build()
+    print(f"Документов в корпусе: {len(documents)}")
+    print(f"Слов: {stats['total_words']}")
+    print(f"Пропущено чувствительных/служебных: {stats['skipped_sensitive']}")
+    print(f"Пропущено дублей: {stats['skipped_duplicates_count']}")
+    print(f"Корпус: {HANDBOOK_CORPUS_PATH}")
+    print(f"Статистика: {HANDBOOK_STATS_PATH}")
 
 
 def parse_args() -> argparse.Namespace:
     """Разобрать аргументы командной строки."""
     parser = argparse.ArgumentParser(
-        description="Мини-помощник по учебным документам (TF-IDF / RAG)."
+        description="Мини-помощник по базе знаний Handbook (TF-IDF / RAG)."
+    )
+    parser.add_argument(
+        "--build-corpus",
+        action="store_true",
+        help="собрать корпус Handbook из D:\\study\\handbook и выйти",
     )
     parser.add_argument(
         "--ask",
@@ -327,16 +200,29 @@ def main() -> None:
         sys.stderr.reconfigure(encoding="utf-8")
 
     args = parse_args()
-    documents = DataLoader(DOCUMENTS_PATH).load_documents()
+
+    if args.build_corpus:
+        build_handbook_corpus()
+        return
+
+    config = handbook_config()
+    if not config.documents_path.exists():
+        build_handbook_corpus()
+
+    documents = DataLoader(config.documents_path).load_documents()
 
     if args.question:
-        run_single_question(documents, args.question)
+        run_single_question(documents, config, args.question)
         return
     if args.ask:
-        run_interactive(documents)
+        run_interactive(documents, config)
         return
 
-    run_full_pipeline(args)
+    run_corpus_pipeline(
+        config,
+        run_neural=args.neural,
+        run_llm=args.llm,
+    )
 
 
 if __name__ == "__main__":
