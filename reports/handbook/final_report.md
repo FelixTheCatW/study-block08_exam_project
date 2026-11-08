@@ -125,7 +125,23 @@
 3. C и D показывают влияние размера чанка: короткие чанки (200 символов) дают Top-1 0.680, длинные (700 символов) — 0.780. Короткие чанки точнее нацелены на предложение-ответ, но могут терять контекст; длинные сохраняют контекст, но размывают сходство.
 4. Новый эксперимент E меняет сразу способ поиска, overlap и Top-K: word, overlap=0, top_k=5. Он даёт Top-1 0.680 и Hit@K 0.980. Большое Top-K повышает шанс найти нужный источник, но добавляет шум в выдачу; overlap=0 уменьшает число чанков и может разрывать мысль на границе.
 
-Графики: `reports/handbook/charts/experiments_metrics.png` (Top-1 и Hit@K) и `reports/handbook/charts/chunks_per_experiment.png` (число чанков).
+Графики:
+
+- `charts/corpus_composition.png` — состав корпуса по категориям и типам файлов;
+- `charts/document_sizes.png` — самые крупные документы;
+- `charts/experiments_metrics.png` — Top-1 и Hit@K;
+- `charts/topk_gain.png` — прирост Hit@K относительно Top-1;
+- `charts/chunks_per_experiment.png` — число чанков.
+
+![Состав корпуса](charts/corpus_composition.png)
+
+![Размеры документов](charts/document_sizes.png)
+
+![Top-1 и Hit@K](charts/experiments_metrics.png)
+
+![Прирост Hit@K](charts/topk_gain.png)
+
+![Число чанков](charts/chunks_per_experiment.png)
 
 ## 5. Контрольный вопрос по Handbook
 

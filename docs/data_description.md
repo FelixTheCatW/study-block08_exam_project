@@ -43,7 +43,7 @@ python main.py --build-corpus
 - точные дубли удаляются по хэшу содержимого;
 - файлы с именами вроде `Экспорт_чата`, `Доступы`, `pwd`, `password`,
   `token`, `secret` исключаются;
-- личные заметки и служебные файлы не включаются;
+- служебные документы и личные эссе не включаются;
 - PDF, изображения, архивы и сырые данные не включаются;
 - полный текст корпуса не коммитится в Git.
 
@@ -85,7 +85,11 @@ python main.py --build-corpus
 - `settings.json` — параметры запуска;
 - `demo_answer.txt`, `custom_answer.txt`, `no_answer.txt` — примеры ответов;
 - `final_report.md` — итоговый отчёт;
-- `charts/*.png` — графики Top-1 / Hit@K и числа чанков.
+- `charts/corpus_composition.png` — документы по категориям и типам;
+- `charts/document_sizes.png` — крупнейшие документы по словам;
+- `charts/experiments_metrics.png` — Top-1 и Hit@K;
+- `charts/topk_gain.png` — прирост Hit@K относительно Top-1;
+- `charts/chunks_per_experiment.png` — число чанков по опытам.
 
 Статистика сборки корпуса: `reports/handbook_corpus_stats.json`.
 
